@@ -161,7 +161,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # =========================
 # STATIC FILES
 # =========================
@@ -169,6 +168,11 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # =========================
 # SECURITY SETTINGS
@@ -209,4 +213,6 @@ SLA_CONFIG = {
 
 
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+SECURE_BROWSER_XSS_FILTER = True
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
