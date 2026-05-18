@@ -19,8 +19,14 @@ media/
 # ENV FILES
 # =========================
 .env
-.env.*
-.env.example
+backend/.env
+frontend/.env
+
+# Keep safe frontend env configs
+!frontend/.env.development
+!frontend/.env.production
+!frontend/.env.example
+
 # =========================
 # NODE / FRONTEND
 # =========================
