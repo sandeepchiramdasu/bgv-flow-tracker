@@ -16,6 +16,7 @@ export interface Candidate {
   identity_verified: boolean;
   employment_verified: boolean;
   remarks?: string;
+  internal_remarks?: string;
   created_at: string;
   updated_at: string;
   completed_at: string | null; 

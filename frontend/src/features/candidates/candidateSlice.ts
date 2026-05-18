@@ -45,22 +45,36 @@ export const createCandidateThunk = createAsyncThunk(
 // ✅ UPDATE REMARKS THUNK (With Auth Header)
 export const updateCandidateRemarks = createAsyncThunk(
   "candidates/updateRemarks",
-  async ({ id, remarks }: { id: number; remarks: string }, { getState }) => {
-    const state = getState() as RootState; 
-    
-    // Using 'access' as per your error message's state type definition
-    const token = state.auth?.access || localStorage.getItem("access_token");
+  async (
+    {
+      id,
+      remarks,
+      internal_remarks,
+    }: {
+      id: number;
+      remarks?: string;
+      internal_remarks?: string;
+    },
+    { getState }
+  ) => {
+    const state = getState() as RootState;
+
+    const token =
+      state.auth?.access || localStorage.getItem("access_token");
 
     const response = await axios.patch(
-      `http://127.0.0.1:8000/api/candidates/${id}/`, 
-      { remarks },
+      `http://127.0.0.1:8000/api/candidates/${id}/`,
+      {
+        remarks,
+        internal_remarks,
+      },
       {
         headers: {
-          // Ensure there is a space after 'Bearer'
           Authorization: `Bearer ${token}`,
         },
       }
     );
+
     return response.data;
   }
 );

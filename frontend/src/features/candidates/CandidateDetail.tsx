@@ -14,9 +14,17 @@ export default function CandidateDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { selected, loading } = useSelector((state: RootState) => state.candidates);
+  const role = useSelector((state: RootState) => state.auth.role);
+
+  const canEditRemarks =
+    role === "admin" || role === "verifier";
+
+  const canViewInternalRemarks =
+    role !== "viewer";
 
   const [isEditing, setIsEditing] = useState(false);
-  const [remarkText, setRemarkText] = useState("");
+  const [remarksText, setRemarksText] = useState("");
+ const [internalRemarksText, setInternalRemarksText] = useState("");
 
   useEffect(() => {
     if (id) dispatch(fetchCandidateById(Number(id)));
@@ -24,8 +32,11 @@ export default function CandidateDetail() {
   }, [id, dispatch]);
 
   useEffect(() => {
-    if (selected) setRemarkText(selected.remarks || "");
-  }, [selected]);
+  if (selected) {
+    setRemarksText(selected.remarks || "");
+    setInternalRemarksText(selected.internal_remarks || "");
+  }
+}, [selected]);
 
   if (loading || !selected) {
     return (
@@ -85,33 +96,91 @@ export default function CandidateDetail() {
             </div>
 
             {/* REMARKS */}
-            <div className="card-modern p-8">
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Remarks</h4>
-                {!isEditing && (
-                  <button onClick={() => setIsEditing(true)} className="text-[10px] font-black text-indigo-600 uppercase">Edit</button>
-                )}
-              </div>
-              {isEditing ? (
-                <div className="space-y-3">
-                  <textarea
-                    value={remarkText}
-                    onChange={(e) => setRemarkText(e.target.value)}
-                    className="w-full border-2 border-slate-100 rounded-xl p-3 text-sm focus:border-indigo-500 outline-none"
-                  />
-                  <button onClick={async () => {
-                    await dispatch(updateCandidateRemarks({ id: selected.id, remarks: remarkText }));
-                    setIsEditing(false);
-                  }} className="w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                  {selected.remarks || "No remarks recorded."}
-                </p>
-              )}
-            </div>
+            {/* REMARKS */}
+<div className="card-modern p-8 space-y-6">
+
+  {/* GENERAL REMARKS */}
+  <div>
+    <div className="flex justify-between items-center mb-4">
+      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        Remarks
+      </h4>
+
+      {canEditRemarks && !isEditing && (
+        <button
+          onClick={() => setIsEditing(true)}
+          className="text-[10px] font-black text-indigo-600 uppercase"
+        >
+          Edit
+        </button>
+      )}
+    </div>
+
+    {isEditing ? (
+      <textarea
+        value={remarksText}
+        onChange={(e) => setRemarksText(e.target.value)}
+        className="w-full border border-slate-200 rounded-xl p-4 min-h-[120px] text-sm outline-none focus:border-indigo-500"
+      />
+    ) : (
+      <div className="bg-slate-50 rounded-2xl p-4 text-sm text-slate-700 whitespace-pre-wrap">
+        {selected.remarks || "No remarks added"}
+      </div>
+    )}
+  </div>
+
+  {/* INTERNAL REMARKS */}
+  {canViewInternalRemarks && (
+    <div>
+      <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-4">
+        Internal Remarks
+      </h4>
+
+      {isEditing ? (
+        <textarea
+          value={internalRemarksText}
+          onChange={(e) => setInternalRemarksText(e.target.value)}
+          className="w-full border border-rose-200 rounded-xl p-4 min-h-[120px] text-sm outline-none focus:border-rose-400 bg-rose-50/40"
+        />
+      ) : (
+        <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 text-sm text-slate-700 whitespace-pre-wrap">
+          {selected.internal_remarks || "No internal remarks added"}
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* SAVE BUTTON */}
+  {isEditing && canEditRemarks && (
+    <div className="flex gap-3">
+      <button
+        onClick={async () => {
+          await dispatch(
+            updateCandidateRemarks({
+              id: selected.id,
+              remarks: remarksText,
+              internal_remarks: internalRemarksText,
+            })
+          );
+
+          setIsEditing(false);
+
+          dispatch(fetchCandidateById(selected.id));
+        }}
+        className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold text-sm"
+      >
+        Save
+      </button>
+
+      <button
+        onClick={() => setIsEditing(false)}
+        className="px-5 py-2 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm"
+      >
+        Cancel
+      </button>
+    </div>
+  )}
+</div>
           </div>
 
           {/* RIGHT: TIMELINE */}

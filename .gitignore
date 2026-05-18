@@ -18,14 +18,26 @@ media/
 # =========================
 # ENV FILES
 # =========================
-.env
-backend/.env
-frontend/.env
 
-# Keep safe frontend env configs
+# Ignore all real env files
+.env
+.env.*
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+
+# =========================
+# ALLOW SAFE EXAMPLE FILES
+# =========================
+
+# Frontend safe envs
 !frontend/.env.development
 !frontend/.env.production
 !frontend/.env.example
+
+# Backend safe examples only
+!backend/.env.example
 
 # =========================
 # NODE / FRONTEND
@@ -50,3 +62,26 @@ Thumbs.db
 # LOGS
 # =========================
 *.log
+
+# =========================
+# TEST / COVERAGE
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# =========================
+# TYPESCRIPT
+# =========================
+*.tsbuildinfo
+
+# =========================
+# DJANGO COLLECTSTATIC
+# =========================
+backend/staticfiles/
+
+# =========================
+# MAC / LINUX TEMP
+# =========================
+*.swp
+*.swo
