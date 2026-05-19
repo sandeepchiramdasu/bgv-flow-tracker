@@ -54,9 +54,8 @@ class CandidateSerializer(serializers.ModelSerializer):
 
         return obj.phone_number
 
-    # -----------------------------
-    # EMAIL MASKING
-    # -----------------------------
+
+
     def get_work_email(self, obj):
         request = self.context.get('request')
 
