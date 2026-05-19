@@ -38,14 +38,16 @@ class CandidateSerializer(serializers.ModelSerializer):
     # PHONE MASKING
     # -----------------------------
 def get_phone_number(self, obj):
-    request = self.context.get('request')
+    request = self.context.get('request', None)
 
     phone = obj.phone_number or ""
 
+    user = getattr(request, "user", None)
+
     if (
-        request
-        and request.user.is_authenticated
-        and getattr(request.user, "role", None) == "viewer"
+        user
+        and getattr(user, "is_authenticated", False)
+        and getattr(user, "role", None) == "viewer"
     ):
         if len(phone) >= 10:
             return f"{phone[:2]}******{phone[-2:]}"
@@ -56,14 +58,16 @@ def get_phone_number(self, obj):
 
 
 def get_work_email(self, obj):
-    request = self.context.get('request')
+    request = self.context.get('request', None)
 
     email = obj.work_email or ""
 
+    user = getattr(request, "user", None)
+
     if (
-        request
-        and request.user.is_authenticated
-        and getattr(request.user, "role", None) == "viewer"
+        user
+        and getattr(user, "is_authenticated", False)
+        and getattr(user, "role", None) == "viewer"
     ):
         try:
             username, domain = email.split('@')
