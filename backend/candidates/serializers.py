@@ -37,48 +37,47 @@ class CandidateSerializer(serializers.ModelSerializer):
     # -----------------------------
     # PHONE MASKING
     # -----------------------------
-    def get_phone_number(self, obj):
-        request = self.context.get('request')
+def get_phone_number(self, obj):
+    request = self.context.get('request')
 
-        if (
-            request
-            and request.user.is_authenticated
-            and getattr(request.user, "role", None) == "viewer"
-        ):
-            phone = obj.phone_number
+    phone = obj.phone_number or ""
 
-            if len(phone) >= 10:
-                return f"{phone[:2]}******{phone[-2:]}"
+    if (
+        request
+        and request.user.is_authenticated
+        and getattr(request.user, "role", None) == "viewer"
+    ):
+        if len(phone) >= 10:
+            return f"{phone[:2]}******{phone[-2:]}"
 
+        return "********"
+
+    return phone
+
+
+def get_work_email(self, obj):
+    request = self.context.get('request')
+
+    email = obj.work_email or ""
+
+    if (
+        request
+        and request.user.is_authenticated
+        and getattr(request.user, "role", None) == "viewer"
+    ):
+        try:
+            username, domain = email.split('@')
+
+            if len(username) > 1:
+                masked_username = (
+                    username[0] + '*' * (len(username) - 1)
+                )
+            else:
+                masked_username = '*'
+
+            return f"{masked_username}@{domain}"
+
+        except Exception:
             return "********"
 
-        return obj.phone_number
-
-
-
-    def get_work_email(self, obj):
-        request = self.context.get('request')
-
-        if (
-            request
-            and request.user.is_authenticated
-            and getattr(request.user, "role", None) == "viewer"
-        ):
-            email = obj.work_email
-
-            try:
-                username, domain = email.split('@')
-
-                if len(username) > 1:
-                    masked_username = (
-                        username[0] + '*' * (len(username) - 1)
-                    )
-                else:
-                    masked_username = '*'
-
-                return f"{masked_username}@{domain}"
-
-            except Exception:
-                return "********"
-
-        return obj.work_email
+    return email
