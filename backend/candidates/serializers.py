@@ -19,7 +19,6 @@ class CandidateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Candidate
-
         fields = '__all__'
 
         read_only_fields = [
@@ -41,15 +40,18 @@ class CandidateSerializer(serializers.ModelSerializer):
     def get_phone_number(self, obj):
         request = self.context.get('request')
 
-        # Viewer → masked
-        if request and request.user.role == 'viewer':
+        if (
+            request
+            and request.user.is_authenticated
+            and getattr(request.user, "role", None) == "viewer"
+        ):
             phone = obj.phone_number
 
             if len(phone) >= 10:
                 return f"{phone[:2]}******{phone[-2:]}"
+
             return "********"
 
-        # Admin / Verifier → full
         return obj.phone_number
 
     # -----------------------------
@@ -58,8 +60,11 @@ class CandidateSerializer(serializers.ModelSerializer):
     def get_work_email(self, obj):
         request = self.context.get('request')
 
-        # Viewer → masked
-        if request and request.user.role == 'viewer':
+        if (
+            request
+            and request.user.is_authenticated
+            and getattr(request.user, "role", None) == "viewer"
+        ):
             email = obj.work_email
 
             try:
@@ -67,8 +72,7 @@ class CandidateSerializer(serializers.ModelSerializer):
 
                 if len(username) > 1:
                     masked_username = (
-                        username[0] +
-                        '*' * (len(username) - 1)
+                        username[0] + '*' * (len(username) - 1)
                     )
                 else:
                     masked_username = '*'
@@ -78,5 +82,4 @@ class CandidateSerializer(serializers.ModelSerializer):
             except Exception:
                 return "********"
 
-        # Admin / Verifier → full
         return obj.work_email
