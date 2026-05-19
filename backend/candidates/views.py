@@ -9,11 +9,18 @@ from .serializers import CandidateSerializer, ActivityLogSerializer
 
 class CandidateViewSet(viewsets.ModelViewSet):
     queryset = Candidate.objects.all().order_by('-created_at')
+
     serializer_class = CandidateSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
     def get_permissions(self):
         if self.request.method in ['GET']:
             return [IsAuthenticated(), ReadOnly()]
+
         return [IsAuthenticated(), IsAdminOrVerifier()]
 
     # 🚫 Block internal creation
