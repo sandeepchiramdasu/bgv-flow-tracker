@@ -63,7 +63,7 @@ export const updateCandidateRemarks = createAsyncThunk(
       state.auth?.access || localStorage.getItem("access_token");
 
     const response = await axios.patch(
-      `http://127.0.0.1:8000/api/candidates/${id}/`,
+      `${import.meta.env.VITE_API_URL}/candidates/${id}/`,
       {
         remarks,
         internal_remarks,
