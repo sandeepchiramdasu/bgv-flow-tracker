@@ -3,6 +3,7 @@ import axios from "axios";
 import { getCandidates, getCandidateById, createCandidate } from "./candidateAPI";
 import type { Candidate } from "../../types";
 import type { RootState } from "../../app/store";
+// import API from "../../services/axiosInstance";
 
 // ✅ STATE TYPE
 interface CandidateState {
@@ -42,7 +43,6 @@ export const createCandidateThunk = createAsyncThunk(
   }
 );
 
-// ✅ UPDATE REMARKS THUNK (With Auth Header)
 export const updateCandidateRemarks = createAsyncThunk(
   "candidates/updateRemarks",
   async (
@@ -60,7 +60,7 @@ export const updateCandidateRemarks = createAsyncThunk(
     const state = getState() as RootState;
 
     const token =
-      state.auth?.access || localStorage.getItem("access_token");
+      state.auth?.access || localStorage.getItem("access");
 
     const response = await axios.patch(
       `${import.meta.env.VITE_API_URL}/candidates/${id}/`,

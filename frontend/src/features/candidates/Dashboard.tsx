@@ -20,7 +20,7 @@ import {
 import { verifyCandidate } from "../verification/verificationAPI";
 
 type Status =
-  | "identity_check"
+  | "identity_check"  
   | "employment_check"
   | "final_report";
 
